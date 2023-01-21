@@ -30,31 +30,43 @@ const register = async (req, res, next) => {
     }
 };
 
-// const registerUser = async (req, res) => {
-//     const { email, username } = req.body;
+const registerUser = async (req, res) => {
+    const { email, username, password } = req.body;
+    let userData = new userModel(/* {
+        email,
+        username,
+        password
+    } */ req.body)
+    try {
+        // check if username or email already exist...
+        const userCheck = await userModel.findOne({ $or: [{ email: email }, { username: username }] });
 
-//     try {
-//         // check if username or email already exist...
-//         const userCheck = await userModel.findOne({ $or: [{ email: email }, { username: username }] });
-
-//         if (userCheck) {
-//             if (userCheck.username === username && userCheck.email === email) {
-//                 console.log("first")
-//                 return res.json({ message: "User Already exists", status: false })
-//             } else if (userCheck.username === username) {
-//                 console.log("second")
-//                 return res.json({ message: "Username Already exists", status: false })
-//             } else if (userCheck.email === email) {
-//                 console.log("third")
-//                 return res.json({ message: "Email Already exists", status: false })
-//             }
-//         } else {
-//             userModel.save
-//         }
-//     } catch (err) {
-
-//     }
-// }
+        if (userCheck) {
+            if (userCheck.username === username && userCheck.email === email) {
+                console.log("first")
+                return res.json({ message: "User Already exists", status: false })
+            } else if (userCheck.username === username) {
+                console.log("second")
+                return res.json({ message: "Username Already exists", status: false })
+            } else if (userCheck.email === email) {
+                console.log("third")
+                return res.json({ message: "Email Already exists", status: false })
+            }
+        } else {
+            // SAVE USER DATA
+            // const userData = await userModel.create({
+            //     email,
+            //     username,
+            //     password
+            // });
+            await userData.save();
+            return res.json({ message: "Registration succesfull!!", status: true });
+        }
+    } catch (err) {
+        console.log(err)
+        return res.json({ message: "Server error, try again", status: false })
+    }
+}
 
 
 const login = async (req, res, next) => {
