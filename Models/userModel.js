@@ -56,6 +56,18 @@ userSchema.pre("save", function (next) {
 
 });
 
+userSchema.methods.validatePassword = function (password, callBack) {
+    console.log(password)
+
+    bcrypt.compare(password, this.password, (err, isValid) => {
+        if (!err) {
+            callBack(err, isValid);
+        } else {
+            next();
+        }
+    })
+}
+
 
 const userModel = mongoose.model("users_collection", userSchema)
 

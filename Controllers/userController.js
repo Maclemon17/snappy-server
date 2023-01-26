@@ -1,5 +1,6 @@
 const userModel = require("../Models/userModel");
 const brcypt = require("bcrypt");
+const jwt = require("jsonwebtoken")
 
 const register = async (req, res, next) => {
     try {
@@ -66,7 +67,7 @@ const registerUser = async (req, res) => {
         console.log(err)
         return res.json({ message: "Server error, try again", status: false })
     }
-}
+};
 
 
 const login = async (req, res, next) => {
@@ -103,6 +104,63 @@ const login = async (req, res, next) => {
 }
 
 
+const signinUser = async (req, res) => {
+    const { username, password } = req.body;
+    const secret = process.env.TOKEN_SECRET
+
+    try {
+        let user = await userModel.findOne({ username });
+
+        if (!user) {
+            return res.json({ message: "No record found", status: false })
+        } else {
+            // VALIDATE PASSWORD
+            user.validatePassword(password, (err, isValid) => {
+                if (err) {
+                    res.status(500).json({ message: "Server error", status: false })
+                } else {
+                    if (!isValid) {
+                        res.json({ message: "Invalid details", status: false });
+                    } else {
+                        try {
+                            // GENERATE TOKEN
+                            const token = jwt.sign({ username }, secret, { expiresIn: "120m" });
+
+                            res.json({ message: "Logged in succesfully", status: true, token });
+                        } catch (error) {
+                            console.log(error)
+                        }
+
+                    }
+                }
+            });
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
+// GET PROFILE DATA
+const getProfile = async (req, res) => {
+    const { authorization } = req.headers;
+    const token = authorization.split(" ")[1];
+    const secret = process.env.TOKEN_SECRET;
+
+    try {
+        const authorized = await jwt.verify(token, secret)
+        
+        const userData = await userModel.findOne({ username: authorized.username }).select("-password");
+
+        return res.json({ message: "Auth success", status: true, userData });
+    } catch (error) {
+        console.log(error.message)
+        res.json({ message: `Auth error: ${error.message}`, status: false })
+    }
+}
+
+
+
 // SET AVATAR
 const setAvatar = async (req, res, next) => {
     try {
@@ -124,7 +182,7 @@ const setAvatar = async (req, res, next) => {
 }
 
 
-// get all users
+// get all users | CONCTACTS LIST
 const getAllUsers = async (req, res, next) => {
     try {
         const users = await userModel.find({ _id: { $ne: req.params.id } }).select("-password");
@@ -141,7 +199,9 @@ const getAllUsers = async (req, res, next) => {
 module.exports = {
     registerUser,
     register,
+    signinUser,
     login,
     setAvatar,
+    getProfile,
     getAllUsers
 }
