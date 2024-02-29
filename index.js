@@ -20,8 +20,12 @@ app.use(express.json());
 
 
 // Routes
+app.use("/", (req, res) => {
+    res.send("Welcome to snappy chat app");
+});
 app.use("/api/auth/", userRouter);
 app.use("/api/messages", messageRouter);
+
 
 // DB CONNECTION
 mongoose.connect(URI, (err) => {
