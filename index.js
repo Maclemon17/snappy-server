@@ -10,7 +10,10 @@ const socket = require("socket.io")
 
 env.config();
 
-const URI = process.env.MONGODB_URI;
+const ENV = process.env.NODE_ENV || 'development';
+const LOCAL = process.env.MONGODB_URI_LOCAL;
+const PROD = process.env.MONGODB_URI;
+const URI = ENV === "production" ? PROD : LOCAL;
 const PORT = process.env.PORT;
 const app = express();
 
@@ -20,7 +23,7 @@ app.use(express.json());
 
 
 // Routes
-app.use("/", (req, res) => {
+app.get("/", (req, res) => {
     res.send("Welcome to snappy chat app");
 });
 app.use("/api/auth/", userRouter);
@@ -30,9 +33,9 @@ app.use("/api/messages", messageRouter);
 // DB CONNECTION
 mongoose.connect(URI, (err) => {
     if (err) {
-        console.log(err);
+        console.log(err, "MonogDB Connection error");
     } else {
-        console.log("MongoDB Connected!!!")
+        console.log("MongoDB Connected!!!");
     }
 });
 
