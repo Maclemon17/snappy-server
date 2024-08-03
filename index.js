@@ -71,7 +71,7 @@ io.on("connection", (socket) => {
     socket.on("send-msg", async (data) => {
         // get the receiver (to) from the data and the onlineusers 
         const sendToUserSocket = await onlineUsers.get(data.to);
-        await console.log(data, sendToUserSocket)
+        console.log(data, sendToUserSocket)
 
         // check if user is online
         if (sendToUserSocket) {

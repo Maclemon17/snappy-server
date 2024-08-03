@@ -44,7 +44,6 @@ const registerUser = async (req, res) => {
 
         if (userCheck) {
             if (userCheck.username === username && userCheck.email === email) {
-                console.log("first")
                 return res.json({ message: "User Already exists", status: false })
             } else if (userCheck.username === username) {
                 console.log("second")
@@ -154,7 +153,7 @@ const getProfile = async (req, res) => {
 
         return res.json({ message: "Auth success", status: true, userData });
     } catch (error) {
-        console.log(error.message)
+        console.log(error.error)
         res.json({ message: `Auth error: ${error.message}`, status: false })
     }
 }

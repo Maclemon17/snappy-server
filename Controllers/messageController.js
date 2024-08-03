@@ -33,7 +33,8 @@ const getAllMessage = async (req, res, next) => {
             return {
                 fromSelf: msg.sender.toString() === from, /* this will return true or false */
                 message: msg.message.text,
-                time: d.toLocaleTimeString(),
+                time:`${d.getHours()}:${d.getMinutes()}`,
+                // time: d.toLocaleTimeString(),
                 date: d.toLocaleDateString(),
             };
         });
