@@ -26,7 +26,6 @@ const getAllMessage = async (req, res, next) => {
         const messages = await messageModel.find({
             users: { $all: [from, to] }
         }).sort({ updatedAt: 1 });
-        console.log(messages)
 
         const projectedMessages = messages.map((msg) => {
             const d = new Date(msg.createdAt);
